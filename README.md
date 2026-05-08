@@ -11,6 +11,8 @@
 7. **[Public Health Recommendations](#7-public-health-recommendations)**
 8. **[Challenges & Data Limitations](#8-challenges--data-limitations)**
 
+---
+
 ### **1. Project Overview**
 
  This project focuses on identifying the specific physiological "tipping points" that separate a manageable case of COVID-19 from one that requires acute hospital care.
@@ -31,6 +33,8 @@ The primary goal of this analysis is to isolate the **biomarkers and vital signs
 * At what specific thresholds (higher or lower) should a patient be transitioned from home care to professional medical supervision?
 
 This analysis moves beyond simple case counting to provide a granular, parameter-by-parameter look at the clinical reality of the virus, offering insights that can help optimize hospital resource allocation and patient monitoring protocols.
+
+---
 
 ### **2. The Dataset**
 
@@ -64,6 +68,8 @@ The power of this analysis comes from the integration of five distinct datasets.
 
 To ensure the analysis remained accurate across these diverse sources, I implemented a strict **Key-Based Merge** strategy, using dates and geographic identifiers to align clinical outcomes with environmental conditions. Rows with incomplete clinical markers in the "Spectrum" dataset were handled via targeted drops to ensure our "Top Predictors" were based on verified medical observations.
 
+---
+
 ### **3. The Analytics Stack**
 
 To process the diverse mix of clinical, environmental, and geographic data, I utilized a comprehensive Python-based ecosystem. Each tool was selected for its specific strength in handling large-scale medical datasets and producing interactive visualizations.
@@ -73,6 +79,8 @@ To process the diverse mix of clinical, environmental, and geographic data, I ut
 * **Seaborn & Matplotlib:** While Plotly handled the interactive maps, I used Seaborn and Matplotlib for the **Clinical Comparative Charts**. These libraries allowed for precise, high-resolution visualizations of the distribution of lab results between hospitalized and home-recovery cohorts.
 * **Urllib & JSON:** These were used to fetch and parse external web-based JSON files, ensuring that the geographic boundaries used in the maps were accurate and standardized.
 * **Scikit-Learn:** Employed for the initial evaluation of feature correlations, helping to determine which clinical markers (like Platelets or Leukocytes) had the strongest relationship with the hospitalization target.
+
+---
 
 ### **4. Data Processing & Feature Engineering**
 
@@ -100,6 +108,8 @@ To ensure the findings were statistically robust and free from "clinical noise,"
 * **Missing Value Strategy:** Used `dropna()` strategically after the merging process. This ensured that the comparison was based only on patients with complete physiological profiles, preventing "hallucinated" averages.
 * **Scale Normalization:** Standardized the units across different lab results to ensure that the `Change` feature accurately reflected clinical variance.
 * **Column Pruning:** Dropped non-informative columns (IDs, administrative timestamps) to focus the dataframe purely on the physiological narrative.
+
+---
 
 ### **5. Clinical Comparative Analysis**
 
@@ -129,6 +139,8 @@ By sorting the parameters based on their "Change" values, I was able to isolate 
 #### **D. From Data to Triage Logic**
 
 This comparative analysis turned a list of numbers into a **Triage Logic**. Instead of waiting for a patient to feel "very sick," this analysis identifies the specific lab results that serve as an early warning system. By seeing exactly how much a patient's biomarkers have deviated from the "Unhospitalized Mean," an HCP can make a data-driven decision about whether to admit the patient to a regular ward or an Intensive Care Unit (ICU).
+
+---
 
 ```python
 import pandas as pd
@@ -173,34 +185,7 @@ print(higher[['Parameter', 'Change']])
 
 
 ```
-
-```
-
 ```python
-import json
-
-with open('Covid_report.ipynb', 'r', encoding='utf-8') as f:
-    nb = json.load(f)
-
-for cell in nb['cells']:
-    if cell['cell_type'] == 'code':
-        source = "".join(cell['source'])
-        if 'hospitalized_mean' in source and 'Change' in source:
-            print("--- Relevant Code ---")
-            print(source)
-            if 'outputs' in cell:
-                for out in cell['outputs']:
-                    if 'text' in out:
-                        print("--- OUTPUT ---")
-                        print("".join(out['text']))
-
-
-
-```
-
-```text
-
-
 # Which factors lead to death of people suffering from covid 19
 #Importing the clinical spectrum data
 clinical_spectrum = pd.read_csv('diagnosis-of-covid-19-and-its-clinical-spectrum.csv')
@@ -258,6 +243,9 @@ for i in lower['Parameter']:
     
 for i in higher['Parameter']:
     print('For higher value of {}, the patient may require HCP'.format(i))
+```
+
+```
 --- OUTPUT ---
 For lower value of rods, the patient may require HCP
 For lower value of monocytes, the patient may require HCP
@@ -283,6 +271,8 @@ For higher value of phosphor, the patient may require HCP
 
 
 ```
+
+---
 
 ### **6. Key Outcomes**
 
@@ -314,6 +304,8 @@ The most significant outcome is the shift from subjective symptom-based assessme
 
 1. **Metabolic and Respiratory shifts** happen predictably before total clinical failure.
 2. The **"Change" metric** provides a quantitative threshold that can be used to set automated alerts in hospital monitoring systems.
+
+---
 
 ### **7. Public Health Recommendations**
 
